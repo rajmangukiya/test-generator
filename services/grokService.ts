@@ -1,4 +1,5 @@
 import Groq from "groq-sdk";
+import Constants from 'expo-constants';
 
 interface Question {
   id: number;
@@ -15,7 +16,7 @@ interface QuizGenerationParams {
 }
 
 class GrokService {
-  private apiKey: string = process.env.GROK_API_KEY!;
+  private apiKey: string = Constants.expoConfig?.extra?.grokApiKey || '';
 
   private groq = new Groq({ apiKey: this.apiKey })
 
