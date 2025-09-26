@@ -68,10 +68,18 @@ export default function Index() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {savedTests.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateTitle}>No Tests Yet</Text>
-            <Text style={styles.emptyStateText}>
-              Create your first quiz using the "Generate Quiz" tab!
-            </Text>
+            <TouchableOpacity
+              style={styles.createQuizButton}
+              onPress={() => router.push('/(tabs)/generate')}
+            >
+              <View style={styles.iconContainer}>
+                <Text style={styles.bigIcon}>🧠</Text>
+              </View>
+              <Text style={styles.createButtonTitle}>Generate Your First Quiz</Text>
+              <Text style={styles.createButtonSubtitle}>
+                Tap to create a personalized quiz with AI-powered questions
+              </Text>
+            </TouchableOpacity>
           </View>
         ) : (
           savedTests.map((test) => (
@@ -272,17 +280,47 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
     paddingHorizontal: 40,
   },
-  emptyStateTitle: {
-    fontSize: 24,
-    fontWeight: "600",
+  createQuizButton: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 40,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: "#573E6A",
+    minWidth: 280,
+  },
+  iconContainer: {
+    backgroundColor: "#f8f9ff",
+    borderRadius: 30,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: "#573E6A",
+  },
+  bigIcon: {
+    fontSize: 60,
+    textAlign: "center",
+  },
+  createButtonTitle: {
+    fontSize: 22,
+    fontWeight: "700",
     color: "#573E6A",
     marginBottom: 12,
     textAlign: "center",
   },
-  emptyStateText: {
+  createButtonSubtitle: {
     fontSize: 16,
     color: "#666",
     textAlign: "center",
-    lineHeight: 24,
+    lineHeight: 22,
+    maxWidth: 240,
   },
 });
