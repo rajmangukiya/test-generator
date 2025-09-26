@@ -1,39 +1,59 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from "@react-navigation/native";
+import { router } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const mockTests = [
-  {
-    id: 1,
-    topic: "JavaScript Fundamentals",
-    difficulty: "Beginner",
-    questionsCount: 10,
-    score: 8,
-    totalQuestions: 10,
-    dateTaken: "2024-01-15",
-    experienceLevel: "Junior"
-  },
-  {
-    id: 2,
-    topic: "React Hooks",
-    difficulty: "Intermediate",
-    questionsCount: 15,
-    score: 12,
-    totalQuestions: 15,
-    dateTaken: "2024-01-14",
-    experienceLevel: "Mid-level"
-  },
-  {
-    id: 3,
-    topic: "Node.js Backend",
-    difficulty: "Advanced",
-    questionsCount: 20,
-    score: 14,
-    totalQuestions: 20,
-    dateTaken: "2024-01-12",
-    experienceLevel: "Senior"
-  }
-];
+interface SavedQuizResult {
+  id: string;
+  topic: string;
+  difficulty: string;
+  experienceLevel: string;
+  questionsCount: number;
+  score: number;
+  totalQuestions: number;
+  dateTaken: string;
+  userAnswers: number[];
+  correctAnswers: number[];
+  questions?: Question[];
+  isPartial?: boolean;
+  answeredQuestions?: number;
+}
+
+interface Question {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+}
 
 export default function Index() {
+  const [savedTests, setSavedTests] = useState<SavedQuizResult[]>([]);
+
+  const loadSavedTests = async () => {
+    try {
+      const existingQuizzes = await AsyncStorage.getItem('quiz_results');
+      if (existingQuizzes) {
+        const quizzes: SavedQuizResult[] = JSON.parse(existingQuizzes);
+        setSavedTests(quizzes);
+      }
+    } catch (error) {
+      console.error('Error loading saved tests:', error);
+    }
+  };
+
+  // Load data when component mounts
+  useEffect(() => {
+    loadSavedTests();
+  }, []);
+
+  // Reload data when screen comes into focus (when user returns from quiz)
+  useFocusEffect(
+    useCallback(() => {
+      loadSavedTests();
+    }, [])
+  );
+
   const getScoreColor = (score: number, total: number) => {
     const percentage = (score / total) * 100;
     if (percentage >= 80) return "#4CAF50";
@@ -46,12 +66,27 @@ export default function Index() {
       <Text style={styles.header}>Previously Generated Tests</Text>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {mockTests.map((test) => (
+        {savedTests.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>No Tests Yet</Text>
+            <Text style={styles.emptyStateText}>
+              Create your first quiz using the "Generate Quiz" tab!
+            </Text>
+          </View>
+        ) : (
+          savedTests.map((test) => (
           <View key={test.id} style={styles.testCard}>
             <View style={styles.cardHeader}>
               <Text style={styles.topicText}>{test.topic}</Text>
-              <View style={styles.difficultyBadge}>
-                <Text style={styles.difficultyText}>{test.difficulty}</Text>
+              <View style={styles.badgeContainer}>
+                <View style={styles.difficultyBadge}>
+                  <Text style={styles.difficultyText}>{test.difficulty}</Text>
+                </View>
+                {test.isPartial && (
+                  <View style={styles.partialBadge}>
+                    <Text style={styles.partialBadgeText}>Partial</Text>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -63,7 +98,12 @@ export default function Index() {
 
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Questions:</Text>
-                <Text style={styles.infoValue}>{test.questionsCount}</Text>
+                <Text style={styles.infoValue}>
+                  {test.isPartial
+                    ? `${test.answeredQuestions || 0}/${test.questionsCount} answered`
+                    : test.questionsCount
+                  }
+                </Text>
               </View>
 
               <View style={styles.scoreRow}>
@@ -76,11 +116,15 @@ export default function Index() {
               <Text style={styles.dateText}>Taken on {test.dateTaken}</Text>
             </View>
 
-            <TouchableOpacity style={styles.reviewButton}>
+            <TouchableOpacity
+              style={styles.reviewButton}
+              onPress={() => router.push(`/review?quizId=${test.id}`)}
+            >
               <Text style={styles.reviewButtonText}>Review Test</Text>
             </TouchableOpacity>
           </View>
-        ))}
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -129,6 +173,10 @@ const styles = StyleSheet.create({
     color: "#333",
     flex: 1,
   },
+  badgeContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
   difficultyBadge: {
     backgroundColor: "#573E6A",
     paddingHorizontal: 8,
@@ -136,6 +184,17 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   difficultyText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  partialBadge: {
+    backgroundColor: "#FF9800",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  partialBadgeText: {
     color: "white",
     fontSize: 12,
     fontWeight: "500",
@@ -172,6 +231,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  partialNote: {
+    fontSize: 14,
+    color: "#FF9800",
+    fontWeight: "500",
+  },
   dateText: {
     fontSize: 12,
     color: "#888",
@@ -200,5 +264,25 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "600",
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 80,
+    paddingHorizontal: 40,
+  },
+  emptyStateTitle: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: "#573E6A",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    lineHeight: 24,
   },
 });

@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Alert, FlatList, TextInput, PanResponder, Dimensions } from 'react-native';
 import { useState, useMemo, useRef } from 'react';
+import { router } from 'expo-router';
+import { grokService, Question } from '../../services/grokService';
 
 const softwareEngineeringTopics = [
   "JavaScript", "Python", "Java", "React", "Node.js", "TypeScript", "C++", "C#", "PHP", "Ruby",
@@ -32,6 +34,7 @@ export default function GenerateQuiz() {
   const [showTopicPicker, setShowTopicPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [quizGenerated, setQuizGenerated] = useState(false);
+  const [generatedQuestions, setGeneratedQuestions] = useState<Question[]>([]);
 
   const sliderRef = useRef(null);
 
@@ -183,7 +186,15 @@ export default function GenerateQuiz() {
     ]
   };
 
-  const handleGenerate = () => {
+  const getExperienceLevel = (years: number): string => {
+    if (years === 0) return 'Beginner';
+    if (years <= 2) return 'Junior';
+    if (years <= 5) return 'Mid-level';
+    if (years <= 10) return 'Senior';
+    return 'Expert';
+  };
+
+  const handleGenerate = async () => {
     if (!selectedTopic || !selectedDifficulty) {
       Alert.alert('Error', 'Please fill all fields');
       return;
@@ -192,10 +203,21 @@ export default function GenerateQuiz() {
     setIsGenerating(true);
     setQuizGenerated(false);
 
-    // Simulate generation time
-    setTimeout(() => {
+    try {
+      const questions = await grokService.generateQuiz({
+        topic: selectedTopic,
+        difficulty: selectedDifficulty,
+        experienceLevel: getExperienceLevel(experience),
+        questionCount: 10
+      });
+
+      setGeneratedQuestions(questions);
       setQuizGenerated(true);
-    }, 3000);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate quiz. Please try again.');
+      console.error('Quiz generation error:', error);
+      setIsGenerating(false);
+    }
   };
 
   const handleStartQuiz = () => {
@@ -203,8 +225,16 @@ export default function GenerateQuiz() {
     setIsGenerating(false);
     setQuizGenerated(false);
 
-    // Here you would navigate to the quiz screen or start the quiz
-    Alert.alert('Quiz Started!', 'Quiz functionality coming soon...');
+    // Navigate to quiz screen with generated questions
+    router.push({
+      pathname: '/quiz',
+      params: {
+        topic: selectedTopic,
+        difficulty: selectedDifficulty,
+        experience: experience.toString(),
+        questions: JSON.stringify(generatedQuestions)
+      }
+    });
   };
 
 
