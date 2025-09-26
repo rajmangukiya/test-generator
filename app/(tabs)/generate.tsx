@@ -31,6 +31,7 @@ export default function GenerateQuiz() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showTopicPicker, setShowTopicPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [quizGenerated, setQuizGenerated] = useState(false);
 
   const sliderRef = useRef(null);
 
@@ -63,6 +64,125 @@ export default function GenerateQuiz() {
     setExperience(newExperience);
   };
 
+  // Static quiz data for now
+  const staticQuizData = {
+    topic: selectedTopic,
+    difficulty: selectedDifficulty,
+    experience: experience,
+    questions: [
+      {
+        id: 1,
+        question: "What is the purpose of the useState hook in React?",
+        options: [
+          "To manage component state",
+          "To handle side effects",
+          "To optimize performance",
+          "To create components"
+        ],
+        correctAnswer: 0
+      },
+      {
+        id: 2,
+        question: "Which of the following is a valid way to declare a variable in JavaScript?",
+        options: [
+          "variable x = 5;",
+          "var x = 5;",
+          "declare x = 5;",
+          "x := 5;"
+        ],
+        correctAnswer: 1
+      },
+      {
+        id: 3,
+        question: "What does CSS stand for?",
+        options: [
+          "Computer Style Sheets",
+          "Creative Style Sheets",
+          "Cascading Style Sheets",
+          "Colorful Style Sheets"
+        ],
+        correctAnswer: 2
+      },
+      {
+        id: 4,
+        question: "Which HTTP method is used to retrieve data?",
+        options: [
+          "POST",
+          "PUT",
+          "DELETE",
+          "GET"
+        ],
+        correctAnswer: 3
+      },
+      {
+        id: 5,
+        question: "What is the time complexity of accessing an element in an array by index?",
+        options: [
+          "O(1)",
+          "O(n)",
+          "O(log n)",
+          "O(n²)"
+        ],
+        correctAnswer: 0
+      },
+      {
+        id: 6,
+        question: "Which of the following is NOT a JavaScript data type?",
+        options: [
+          "String",
+          "Boolean",
+          "Float",
+          "Undefined"
+        ],
+        correctAnswer: 2
+      },
+      {
+        id: 7,
+        question: "What does API stand for?",
+        options: [
+          "Application Programming Interface",
+          "Automated Program Integration",
+          "Advanced Programming Instructions",
+          "Application Process Integration"
+        ],
+        correctAnswer: 0
+      },
+      {
+        id: 8,
+        question: "Which database type is MongoDB?",
+        options: [
+          "Relational",
+          "NoSQL",
+          "Graph",
+          "Object-oriented"
+        ],
+        correctAnswer: 1
+      },
+      {
+        id: 9,
+        question: "What is the main purpose of version control systems like Git?",
+        options: [
+          "To compile code",
+          "To track changes and manage code versions",
+          "To test applications",
+          "To deploy applications"
+        ],
+        correctAnswer: 1
+      },
+      {
+        id: 10,
+        question: "Which of the following is a CSS framework?",
+        options: [
+          "React",
+          "Node.js",
+          "Bootstrap",
+          "MongoDB"
+        ],
+        correctAnswer: 2
+      }
+    ]
+  };
+
   const handleGenerate = () => {
     if (!selectedTopic || !selectedDifficulty) {
       Alert.alert('Error', 'Please fill all fields');
@@ -70,11 +190,21 @@ export default function GenerateQuiz() {
     }
 
     setIsGenerating(true);
+    setQuizGenerated(false);
+
     // Simulate generation time
     setTimeout(() => {
-      setIsGenerating(false);
-      Alert.alert('Success', 'Quiz generated successfully!');
+      setQuizGenerated(true);
     }, 3000);
+  };
+
+  const handleStartQuiz = () => {
+    // Close the modal
+    setIsGenerating(false);
+    setQuizGenerated(false);
+
+    // Here you would navigate to the quiz screen or start the quiz
+    Alert.alert('Quiz Started!', 'Quiz functionality coming soon...');
   };
 
 
@@ -228,20 +358,58 @@ export default function GenerateQuiz() {
         </View>
       </Modal>
 
-      {/* Loading Modal */}
+      {/* Quiz Generation Modal */}
       <Modal
         animationType="fade"
         transparent={true}
         visible={isGenerating}
-        onRequestClose={() => {}}
+        onRequestClose={() => {
+          if (quizGenerated) {
+            setIsGenerating(false);
+            setQuizGenerated(false);
+          }
+        }}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Generating Quiz...</Text>
-            <Text style={styles.modalSubtitle}>Please wait while we create your personalized quiz</Text>
-            <View style={styles.loadingSpinner}>
-              <Text style={styles.loadingText}>🎯</Text>
+            <Text style={styles.modalTitle}>
+              {quizGenerated ? "Quiz Ready!" : "Generating Quiz..."}
+            </Text>
+            <Text style={styles.modalSubtitle}>
+              {quizGenerated
+                ? "Your personalized quiz is ready to start!"
+                : "Please wait while we create your personalized quiz"
+              }
+            </Text>
+
+            <View style={styles.quizInfoContainer}>
+              <Text style={styles.quizInfoItem}>📚 Topic: {selectedTopic}</Text>
+              <Text style={styles.quizInfoItem}>⚡ Difficulty: {selectedDifficulty}</Text>
+              <Text style={styles.quizInfoItem}>👨‍💻 Experience: {experience} years</Text>
+              <Text style={styles.quizInfoItem}>❓ Questions: 10</Text>
             </View>
+
+            {!quizGenerated && (
+              <View style={styles.loadingSpinner}>
+                <Text style={styles.loadingText}>🎯</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={[
+                styles.startQuizButton,
+                !quizGenerated && styles.startQuizButtonDisabled
+              ]}
+              onPress={handleStartQuiz}
+              disabled={!quizGenerated}
+            >
+              <Text style={[
+                styles.startQuizButtonText,
+                !quizGenerated && styles.startQuizButtonTextDisabled
+              ]}>
+                Start Quiz
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -540,5 +708,37 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#999",
     textAlign: "center",
+  },
+  quizInfoContainer: {
+    marginVertical: 20,
+    alignItems: "flex-start",
+    width: "100%",
+  },
+  quizInfoItem: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 8,
+    lineHeight: 24,
+  },
+  startQuizButton: {
+    backgroundColor: "#573E6A",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 10,
+    minWidth: 150,
+  },
+  startQuizButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  startQuizButtonDisabled: {
+    backgroundColor: "#ccc",
+    opacity: 0.6,
+  },
+  startQuizButtonTextDisabled: {
+    color: "#999",
   },
 });
