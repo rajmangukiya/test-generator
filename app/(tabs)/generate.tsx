@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Alert, FlatList, TextInput, PanResponder, Dimensions } from 'react-native';
-import { useState, useMemo, useRef } from 'react';
 import { router } from 'expo-router';
+import { useMemo, useRef, useState } from 'react';
+import { Alert, Dimensions, FlatList, Modal, PanResponder, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { grokService, Question } from '../../services/grokService';
 
 const softwareEngineeringTopics = [
@@ -67,125 +67,6 @@ export default function GenerateQuiz() {
     setExperience(newExperience);
   };
 
-  // Static quiz data for now
-  const staticQuizData = {
-    topic: selectedTopic,
-    difficulty: selectedDifficulty,
-    experience: experience,
-    questions: [
-      {
-        id: 1,
-        question: "What is the purpose of the useState hook in React?",
-        options: [
-          "To manage component state",
-          "To handle side effects",
-          "To optimize performance",
-          "To create components"
-        ],
-        correctAnswer: 0
-      },
-      {
-        id: 2,
-        question: "Which of the following is a valid way to declare a variable in JavaScript?",
-        options: [
-          "variable x = 5;",
-          "var x = 5;",
-          "declare x = 5;",
-          "x := 5;"
-        ],
-        correctAnswer: 1
-      },
-      {
-        id: 3,
-        question: "What does CSS stand for?",
-        options: [
-          "Computer Style Sheets",
-          "Creative Style Sheets",
-          "Cascading Style Sheets",
-          "Colorful Style Sheets"
-        ],
-        correctAnswer: 2
-      },
-      {
-        id: 4,
-        question: "Which HTTP method is used to retrieve data?",
-        options: [
-          "POST",
-          "PUT",
-          "DELETE",
-          "GET"
-        ],
-        correctAnswer: 3
-      },
-      {
-        id: 5,
-        question: "What is the time complexity of accessing an element in an array by index?",
-        options: [
-          "O(1)",
-          "O(n)",
-          "O(log n)",
-          "O(n²)"
-        ],
-        correctAnswer: 0
-      },
-      {
-        id: 6,
-        question: "Which of the following is NOT a JavaScript data type?",
-        options: [
-          "String",
-          "Boolean",
-          "Float",
-          "Undefined"
-        ],
-        correctAnswer: 2
-      },
-      {
-        id: 7,
-        question: "What does API stand for?",
-        options: [
-          "Application Programming Interface",
-          "Automated Program Integration",
-          "Advanced Programming Instructions",
-          "Application Process Integration"
-        ],
-        correctAnswer: 0
-      },
-      {
-        id: 8,
-        question: "Which database type is MongoDB?",
-        options: [
-          "Relational",
-          "NoSQL",
-          "Graph",
-          "Object-oriented"
-        ],
-        correctAnswer: 1
-      },
-      {
-        id: 9,
-        question: "What is the main purpose of version control systems like Git?",
-        options: [
-          "To compile code",
-          "To track changes and manage code versions",
-          "To test applications",
-          "To deploy applications"
-        ],
-        correctAnswer: 1
-      },
-      {
-        id: 10,
-        question: "Which of the following is a CSS framework?",
-        options: [
-          "React",
-          "Node.js",
-          "Bootstrap",
-          "MongoDB"
-        ],
-        correctAnswer: 2
-      }
-    ]
-  };
-
   const getExperienceLevel = (years: number): string => {
     if (years === 0) return 'Beginner';
     if (years <= 2) return 'Junior';
@@ -208,7 +89,7 @@ export default function GenerateQuiz() {
         topic: selectedTopic,
         difficulty: selectedDifficulty,
         experienceLevel: getExperienceLevel(experience),
-        questionCount: 10
+        questionCount: 5
       });
 
       setGeneratedQuestions(questions);
@@ -416,7 +297,7 @@ export default function GenerateQuiz() {
               <Text style={styles.quizInfoItem}>📚 Topic: {selectedTopic}</Text>
               <Text style={styles.quizInfoItem}>⚡ Difficulty: {selectedDifficulty}</Text>
               <Text style={styles.quizInfoItem}>👨‍💻 Experience: {experience} years</Text>
-              <Text style={styles.quizInfoItem}>❓ Questions: 10</Text>
+              <Text style={styles.quizInfoItem}>❓ Questions: 5</Text>
             </View>
 
             {!quizGenerated && (

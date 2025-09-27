@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.rajmangukiya.testgenerator2"
     },
     "web": {
       "output": "static",
@@ -45,7 +46,10 @@
       "reactCompiler": true
     },
     "extra": {
-      "grokApiKey": "${GROK_API_KEY}"
+      "router": {},
+      "eas": {
+        "projectId": "d745cfa2-96eb-46de-83f7-461f4d8e37e6"
+      }
     }
   }
 }

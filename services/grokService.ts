@@ -1,5 +1,5 @@
-import Groq from "groq-sdk";
 import Constants from 'expo-constants';
+import Groq from "groq-sdk";
 
 interface Question {
   id: number;
@@ -30,7 +30,7 @@ class GrokService {
         messages: [
           {
             role: "system",
-            content: "You are an expert quiz generator. Generate quiz questions in valid JSON format only. Do not include any explanations or additional text."
+            content: "You are an expert quiz generator. Generate unique quiz questions in valid JSON format only. Do not include any explanations or additional text."
           },
           {
             role: "user",
@@ -50,6 +50,8 @@ class GrokService {
 
       // Validate and format questions
       const formatedQuestions = this.formatQuestions(parsedQuestions.questions || parsedQuestions);
+      console.log('formatedQuestions', formatedQuestions);
+      
 
       return formatedQuestions
     } catch (error) {
