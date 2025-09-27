@@ -50,8 +50,6 @@ class GrokService {
 
       // Validate and format questions
       const formatedQuestions = this.formatQuestions(parsedQuestions.questions || parsedQuestions);
-      console.log('formatedQuestions', formatedQuestions);
-      
 
       return formatedQuestions
     } catch (error) {

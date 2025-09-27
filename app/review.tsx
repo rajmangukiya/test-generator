@@ -27,7 +27,7 @@ interface Question {
 }
 
 export default function ReviewTest() {
-  const { quizId } = useLocalSearchParams();
+  const { quizId, fromSubmission } = useLocalSearchParams();
   const [quizResult, setQuizResult] = useState<SavedQuizResult | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -40,7 +40,16 @@ export default function ReviewTest() {
       const existingQuizzes = await AsyncStorage.getItem('quiz_results');
       if (existingQuizzes) {
         const quizzes: SavedQuizResult[] = JSON.parse(existingQuizzes);
-        const quiz = quizzes.find(q => q.id === quizId);
+        let quiz;
+
+        if (fromSubmission === 'true') {
+          // Get the most recently submitted quiz (first one in the array)
+          quiz = quizzes[0];
+        } else {
+          // Find quiz by ID for normal review flow
+          quiz = quizzes.find(q => q.id === quizId);
+        }
+
         if (quiz) {
           setQuizResult(quiz);
           // Check if quiz has stored questions, otherwise use static questions
@@ -124,7 +133,13 @@ export default function ReviewTest() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => {
+          if (fromSubmission === 'true') {
+            router.replace('/(tabs)/(home)');
+          } else {
+            router.back();
+          }
+        }}>
           <View style={styles.backButtonContent}>
             <Text style={styles.backButtonIcon}>←</Text>
             <Text style={styles.backButtonText}>Back</Text>

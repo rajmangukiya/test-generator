@@ -138,16 +138,14 @@ export default function Quiz() {
       // Save quiz result to AsyncStorage
       await saveQuizResult(newUserAnswers, score);
 
-      Alert.alert(
-        'Quiz Completed!',
-        `Your score: ${score}/${quizData.questions.length} (${Math.round((score / quizData.questions.length) * 100)}%)`,
-        [
-          {
-            text: 'View Results',
-            onPress: () => router.replace('/(tabs)/(home)')
-          }
-        ]
-      );
+      // Navigate directly to review screen with quiz data
+      router.replace({
+        pathname: '/review',
+        params: {
+          quizId: Date.now().toString(),
+          fromSubmission: 'true'
+        }
+      });
     } else {
       // Move to next question
       setCurrentQuestionIndex(currentQuestionIndex + 1);

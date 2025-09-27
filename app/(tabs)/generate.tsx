@@ -294,10 +294,10 @@ export default function GenerateQuiz() {
             </Text>
 
             <View style={styles.quizInfoContainer}>
-              <Text style={styles.quizInfoItem}>📚 Topic: {selectedTopic}</Text>
-              <Text style={styles.quizInfoItem}>⚡ Difficulty: {selectedDifficulty}</Text>
-              <Text style={styles.quizInfoItem}>👨‍💻 Experience: {experience} years</Text>
-              <Text style={styles.quizInfoItem}>❓ Questions: 5</Text>
+              <Text style={styles.quizInfoItem}>- Topic: {selectedTopic}</Text>
+              <Text style={styles.quizInfoItem}>- Difficulty: {selectedDifficulty}</Text>
+              <Text style={styles.quizInfoItem}>- Experience: {experience} years</Text>
+              <Text style={styles.quizInfoItem}>- Questions: 5</Text>
             </View>
 
             {!quizGenerated && (

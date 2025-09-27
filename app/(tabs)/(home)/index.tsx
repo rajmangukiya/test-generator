@@ -63,7 +63,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Previously Generated Tests</Text>
+      <Text style={styles.header}>Previously Taken Tests</Text>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {savedTests.length === 0 ? (
